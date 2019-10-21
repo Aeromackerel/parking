@@ -6,6 +6,8 @@ public class Vehicle
 	// Later implement size and license plate number to keep track of vehicle
 	// Field variables
 	String ticketAttached;
+	String plateNumber;
+	ParkingType requiredSpace;	
 	
 	// Helper functions
 	

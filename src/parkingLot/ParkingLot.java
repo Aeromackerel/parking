@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class ParkingLot 
@@ -44,6 +43,7 @@ public class ParkingLot
 	// Field variables
 	private int maxCapacity;
 	private int currentCapacity;
+	private int numOfFloors;
 	private float hourlyRate;
 	ArrayList<ParkingEntrance> List_ParkingEntrance = new ArrayList<>();
 	ArrayList<ParkingExit> List_ParkingExit = new ArrayList<> ();
@@ -109,14 +109,22 @@ public class ParkingLot
 			System.exit(1);
 		}
 		
+		// Display the current information to the driver
+		ParkingEntrance entranceChosen = List_ParkingEntrance.get(indexPass);
+		entranceChosen.DisplayInfo(currentCapacity, hourlyRate);
+		
 		// Verify that there is space
 		if (this.currentCapacity > 0)
 		{
-			ParkingEntrance entranceChosen = List_ParkingEntrance.get(indexPass);
 			String ticket = entranceChosen.RecieveTicket();
 			System.out.println("Recieved a ticket - timestamp given : " + ticket);
 			Vehicle Car = new Vehicle(ticket);
 			List_Vehicles.add(Car);
+		}
+		else 
+		{
+			System.out.println("There isn't enough space in the parking lot - consider finding somewhere else to park");
+			System.exit(1);
 		}
 		
 		// Decrements the capacity by 1
@@ -233,7 +241,6 @@ public class ParkingLot
 		String whileOperation;
 		String operationPerform;
 		boolean continueOperation = true;
-		boolean continueOperationInternal = true;
 				
 		System.out.println("How many parking spaces would you like in your parking lot?");
 		capacityLot = sc.nextInt();
