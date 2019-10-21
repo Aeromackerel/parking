@@ -155,7 +155,7 @@ public class ParkingLot
 		}
 		
 		ParkingExit exitChosen = List_ParkingExit.get(indexPass);
-		exitChosen.PayTicket(ticket);
+		exitChosen.PayTicket(ticket, this.hourlyRate);
 		
 		this.UnparkVehicle();
 		
@@ -221,8 +221,8 @@ public class ParkingLot
 	
 	// Driver code
 	
-	public static void main (String [] args) throws IOException
-	{
+	public static void main (String [] args)
+	{	
 		Scanner sc = new Scanner(System.in);
 		
 		// Don't have to set these to null because garbage collector does so for us
@@ -278,10 +278,12 @@ public class ParkingLot
 					{
 					case "1":
 						clientParkingLot.getProfit();
+						break;
 					case "2":
 						clientParkingLot.listExits();
 						int exitIndex = sc.nextInt();
 						clientParkingLot.getProfitSpecific(exitIndex);
+						break;
 					}
 					
 					System.out.println("Do you want to continue operations? - input (Y/N)");
@@ -302,8 +304,10 @@ public class ParkingLot
 					{
 					case "1":
 						clientParkingLot.enterParkingLot(sc);
+						break;
 					case "2":
 						clientParkingLot.leaveParkingLot(sc);
+						break;
 					}
 					
 					System.out.println("Do you want to continue operations? - input (Y/N)");

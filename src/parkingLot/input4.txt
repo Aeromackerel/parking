@@ -1,0 +1,8 @@
+this is not a number (exception)
+32
+40
+2.25
+Y
+V
+2
+1 (Catches exception)

@@ -20,7 +20,7 @@ public class ParkingEntrance
 	
 	public String RecieveTicket()
 	{
-		String sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
+		String sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date());
 		return sdf;
 	}
 

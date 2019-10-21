@@ -24,7 +24,7 @@ public class ParkingExit
 	
 	private boolean isValidDate (String inDate)
 	{
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss:ms");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		dateFormat.setLenient(false);
 		
 		try
@@ -85,15 +85,18 @@ public class ParkingExit
 	 * then they don't pay.
 	 */
 	
-	public void PayTicket (String ticket)
+	public void PayTicket (String ticket, float hourlyRate)
 	{
 		if (!isValidDate(ticket))
 			System.out.println("Invalid ticket - please exit");
 		
-		SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");  
+		SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm");  
 		
 		// Otherwise, we evaluate the ticket
-		String currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
+		String currentDateTime = new SimpleDateFormat("yyyy/MM/dd HH:mm").format(new Date());
+		
+		System.out.println(ticket);
+		System.out.println(currentDateTime);
 		
 		Date d1 = null;
 		Date d2 = null;
@@ -112,13 +115,13 @@ public class ParkingExit
 		long diffMinutes = diff / (60 * 1000);
 		long diffHours = diff / (60 * 60 * 1000);
 		
+		double diffDouble = diff/(1000 * 60);
+		diffDouble /= 60;
+		System.out.println(diffDouble);
 		
 		
 		
-		
-	
-		
-		
+		System.out.println("To exit, you'll have to pay the following amount : $ " + hourlyRate * diffDouble );
 		
 	}
 	
