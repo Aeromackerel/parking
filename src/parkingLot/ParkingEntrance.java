@@ -18,6 +18,8 @@ public class ParkingEntrance
 	{
 		System.out.println("The current available spots in the lot : " + capacity);
 		System.out.println("Our hourly rate is : $" + rate + " per hour");
+		
+		// Ask user if they want to continue with parking
 	}
 	
 	/*

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,10 +31,6 @@ public class ParkingLot
 		for (int i = 0; i < numExits; i++)
 			List_ParkingExit.add(new ParkingExit());
 		
-		System.out.println(List_ParkingEntrance.size());
-		System.out.println(List_ParkingExit.size());
-		System.out.println(this.hourlyRate);
-		
 		System.out.println("Successfully created a parking lot!");
 	}
 	
@@ -54,9 +51,7 @@ public class ParkingLot
 	/*
 	 * Retrieves the amount of profit that the owner of the lot has
 	 * accumulated since opening the parking lot
-	 * 
 	 * @ params - none
-	 * 
 	 */
 	
 	private void listProfitOperations()
@@ -71,11 +66,9 @@ public class ParkingLot
 	private void listExits()
 	{System.out.println("Please select from the following exits : 1 ~  " + String.valueOf(List_ParkingExit.size()));}
 	
-	
 	private void getProfit()
 	{	
 		int amountProfit = 0;
-		
 		// Iterate through the parking Exit array
 		for (ParkingExit pe : List_ParkingExit)
 		{
@@ -227,13 +220,39 @@ public class ParkingLot
 		}
 	}
 	
+	public static ArrayList<String> readFile (String filename)
+	{
+		ArrayList<String> fileContents = new ArrayList<>();
+		
+		try 
+		{
+			BufferedReader br = new BufferedReader (new FileReader(filename));
+			String line = br.readLine();
+			
+			while (line != null)
+			{
+				fileContents.add(line);
+				line = br.readLine();
+			}
+			
+			br.close();
+		} 
+		catch (IOException e) {e.printStackTrace();}
+		
+		return fileContents;
+	}
+	
 	// Driver code
 	
 	public static void main (String [] args)
 	{	
+		ValidateInputs helperClass = new ValidateInputs();
+		
+		ArrayList<String> fileContents = readFile(args[0]);
+		helperClass.checkInputs(fileContents);
+		
 		Scanner sc = new Scanner(System.in);
 		
-		// Don't have to set these to null because garbage collector does so for us
 		int capacityLot;
 		int numEntrances;
 		int numExits;
@@ -241,19 +260,12 @@ public class ParkingLot
 		String whileOperation;
 		String operationPerform;
 		boolean continueOperation = true;
-				
-		System.out.println("How many parking spaces would you like in your parking lot?");
-		capacityLot = sc.nextInt();
-		System.out.println("How many Parking entrances would you like to have?");
-		numEntrances = sc.nextInt();
-		System.out.println("How many Parking exits would you like to have?");
-		numExits = sc.nextInt();
-		System.out.println("Please input the hourly rate you'd like to charge");
-		rate = sc.nextFloat();
 		
+		capacityLot = Integer.parseInt(fileContents.get(0));
+		numEntrances = Integer.parseInt(fileContents.get(1));
+		numExits = Integer.parseInt(fileContents.get(2));
+		rate = Float.parseFloat(fileContents.get(3));
 		validateInputs (capacityLot, numEntrances, numExits, rate);
-		
-		// Construct the Parking lot
 		
 		ParkingLot clientParkingLot = new ParkingLot(capacityLot, numEntrances, numExits, rate);
 		
