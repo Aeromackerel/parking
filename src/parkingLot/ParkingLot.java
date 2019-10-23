@@ -34,10 +34,8 @@ public class ParkingLot
 		System.out.println("Successfully created a parking lot!");
 	}
 	
-	public ParkingLot() 
-	{}
+	public ParkingLot() {}
 
-	// Field variables
 	private int maxCapacity;
 	private int currentCapacity;
 	private int numOfFloors;
@@ -46,13 +44,11 @@ public class ParkingLot
 	ArrayList<ParkingExit> List_ParkingExit = new ArrayList<> ();
 	ArrayList<Vehicle> List_Vehicles = new ArrayList<>();
 	
-	// Correlated functions
+	// Correlated functions section
 	
-	/*
-	 * Retrieves the amount of profit that the owner of the lot has
+	 /* Retrieves the amount of profit that the owner of the lot has
 	 * accumulated since opening the parking lot
-	 * @ params - none
-	 */
+	 * @ params - none */
 	
 	private void listProfitOperations()
 	{		
@@ -83,8 +79,6 @@ public class ParkingLot
 		int amountProfit = 0;
 		
 		// Find the specific index of parking exit and get the profit that is kept track in that exit
-		indexIn -= 1;
-		
 	}
 		
 	private void enterParkingLot(Scanner sc)
@@ -124,6 +118,14 @@ public class ParkingLot
 		this.ParkVehicle();
 	}
 	
+	/*  Asks the user what vehicle they would like to
+	 *  remove from the parking lot. Increments available
+	 *  spaces by one and pushes profit into the exit that
+	 *  the vehicle exitted from
+	 *  @ params - Scanner
+	 *  @ errors - if they choose an invalid index, then we tell exit the program
+	 */
+	
 	private void leaveParkingLot(Scanner sc)
 	{
 		System.out.println("Please enter the number of your vehicle from : 1 ~ " + String.valueOf(List_Vehicles.size()));
@@ -158,15 +160,40 @@ public class ParkingLot
 		ParkingExit exitChosen = List_ParkingExit.get(indexPass);
 		exitChosen.PayTicket(ticket, this.hourlyRate);
 		
-		this.UnparkVehicle();
+		this.UnparkVehicle(indexPassVehicle);
 		
 	}
 	
 	private void ParkVehicle()
 	{this.currentCapacity -= 1;}
 	
-	private void UnparkVehicle()
-	{this.currentCapacity += 1;}
+	private void UnparkVehicle(int indexCar)
+	{
+		this.currentCapacity += 1;
+		this.List_Vehicles.remove(indexCar);
+	}
+	
+	private void setCarsTickets (ArrayList<String> fileContents, int numCarsParked)
+	{
+		int index = 5;
+		String ticketDate;
+		
+		while (index < 5 + numCarsParked)
+		{
+			ticketDate = fileContents.get(index);
+			boolean validTicket = List_ParkingExit.get(0).isValidDate(ticketDate);
+			if (validTicket == false) {handleInvalidTicket();}
+			Vehicle car = new Vehicle(ticketDate);
+			List_Vehicles.add(car);
+			index++;
+		}
+	}
+	
+	private void handleInvalidTicket()
+	{
+		System.out.println("The ticket is invalid - please contact the parking lot staff");
+		System.exit(1);
+	}
 	
 	public int getCurrentCapacity()
 		{return this.currentCapacity;}
@@ -176,11 +203,9 @@ public class ParkingLot
 	
 	// Static functions section
 	
-	/*
-	 * Validates the input of what the user passes in
+	/* Validates the input of what the user passes in
 	 * @ params - number of spaces, number of entrances, number of exits
-	 * @ errors - if <= 0 - notify user and exit
-	 */
+	 * @ errors - if <= 0 - notify user and exit*/
 
 	public static void validateInputs (int capacityLot, int numEntrances, int numExits, float rate)
 	{
@@ -247,30 +272,34 @@ public class ParkingLot
 	public static void main (String [] args)
 	{	
 		ValidateInputs helperClass = new ValidateInputs();
-		
 		ArrayList<String> fileContents = readFile(args[0]);
 		helperClass.checkInputs(fileContents);
-		
-		Scanner sc = new Scanner(System.in);
 		
 		int capacityLot;
 		int numEntrances;
 		int numExits;
 		float rate;
+		int numCarsParked;
 		String whileOperation;
 		String operationPerform;
 		boolean continueOperation = true;
 		
+		// Constructing parking lot based off parameters passed in through text file
 		capacityLot = Integer.parseInt(fileContents.get(0));
 		numEntrances = Integer.parseInt(fileContents.get(1));
 		numExits = Integer.parseInt(fileContents.get(2));
 		rate = Float.parseFloat(fileContents.get(3));
 		validateInputs (capacityLot, numEntrances, numExits, rate);
-		
 		ParkingLot clientParkingLot = new ParkingLot(capacityLot, numEntrances, numExits, rate);
+		
+		// Populate the parking lot with dates for easier simulation
+		numCarsParked = Integer.parseInt(fileContents.get(4));
+		clientParkingLot.setCarsTickets(fileContents, numCarsParked);
 		
 		String tempBoolHolder;
 		String optionSelected;
+		
+		Scanner sc = new Scanner(System.in);
 		
 		while (continueOperation == true)
 		{

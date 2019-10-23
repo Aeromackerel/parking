@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class ParkingExit
 {
 	// Field variables
-	int totalProfit;
+	double totalProfit;
 	ArrayList <Integer> totalProfitPerDay;
 	ArrayList <String> timeStampDay;
 	
@@ -22,15 +22,13 @@ public class ParkingExit
 	 * 
 	 */
 	
-	private boolean isValidDate (String inDate)
+	protected boolean isValidDate (String inDate)
 	{
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		dateFormat.setLenient(false);
 		
 		try
-		{
-			dateFormat.parse(inDate.trim());
-		}
+		{dateFormat.parse(inDate.trim());}
 		catch (ParseException pe)
 		{
 			return false;
@@ -118,6 +116,8 @@ public class ParkingExit
 		double diffDouble = diff/(1000 * 60);
 		diffDouble /= 60;
 		System.out.println(diffDouble);
+		
+		totalProfit += diffDouble;
 		
 		
 		
