@@ -37,16 +37,12 @@ public class ParkingExit
 		return true;
 	}
 	
-	/*
-	 * checks if the current date passed is is ==
+	 /* checks if the current date passed is is ==
 	 * to the day of the last entry - if not then
 	 * we make a new entry to the totalProfit Array
 	 * 
 	 * @ params - datetime stamp of current day
-	 * @ error - datetime later than current datetime -> throw exception
-	 * 
-	 */
-	
+	 * @ error - datetime later than current datetime -> throw exception*/
 	
 	private boolean newEntryHelper (String currentDate)
 	{
@@ -59,15 +55,13 @@ public class ParkingExit
 	}
 	
 	
-	/*
-	 * Given the ticket and the previous datetime
+	 /* Given the ticket and the previous datetime
 	 * we take that and subtract from the current datetime,
 	 * then multiply by the rate per hour
 	 * 
 	 * @ params - Datetime string
 	 * @ errors - If ticket is later than the current datetime
-	 * then they don't pay.
-	 */
+	 * then they don't pay.*/
 	
 	public void PayTicket (String ticket, float hourlyRate)
 	{

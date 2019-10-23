@@ -19,10 +19,12 @@ public class ParkingLot
 {
 	// Constructors
 	
-	public ParkingLot (int maxCap, int numEntrances, int numExits, float rate)
+	public ParkingLot (String nameIn, int maxCap, int numEntrances, int numExits, float rate)
 	{
 		this.currentCapacity = maxCap;
 		this.hourlyRate = rate;
+		this.policy = "";
+		this.parkingLotName = nameIn;
 		
 		for (int i = 0; i < numEntrances; i++)
 			List_ParkingEntrance.add(new ParkingEntrance());
@@ -38,6 +40,8 @@ public class ParkingLot
 	private int currentCapacity;
 	private int numOfFloors;
 	private float hourlyRate;
+	protected String parkingLotName;
+	private String policy;
 	ArrayList<ParkingEntrance> List_ParkingEntrance = new ArrayList<>();
 	ArrayList<ParkingExit> List_ParkingExit = new ArrayList<> ();
 	ArrayList<Vehicle> List_Vehicles = new ArrayList<>();
@@ -170,6 +174,10 @@ public class ParkingLot
 		this.List_Vehicles.remove(indexCar);
 	}
 	
+	/* Initializes the parking lot with existing vehicles
+	 * and datetime stamped tickets from the txt file passed in
+	 * @ params - ArrayList<String> fileLines, integer numbers of car parked */
+	
 	private void setCarsTickets (ArrayList<String> fileContents, int numCarsParked)
 	{
 		int index = 5;
@@ -182,6 +190,7 @@ public class ParkingLot
 			if (validTicket == false) {handleInvalidTicket();}
 			Vehicle car = new Vehicle(ticketDate);
 			List_Vehicles.add(car);
+			this.ParkVehicle();
 			index++;
 		}
 	}
@@ -191,6 +200,12 @@ public class ParkingLot
 		System.out.println("The ticket is invalid - please contact the parking lot staff");
 		System.exit(1);
 	}
+	
+	private void setPolicy(String policyIn)
+	{this.policy = policyIn;}
+	
+	public float getHourlyRate()
+	{return this.hourlyRate;}
 	
 	public int getCurrentCapacity()
 		{return this.currentCapacity;}
@@ -275,6 +290,7 @@ public class ParkingLot
 		int capacityLot;
 		int numEntrances;
 		int numExits;
+		int numFloors;
 		float rate;
 		int numCarsParked;
 		String whileOperation;
@@ -287,7 +303,7 @@ public class ParkingLot
 		numExits = Integer.parseInt(fileContents.get(2));
 		rate = Float.parseFloat(fileContents.get(3));
 		validateInputs (capacityLot, numEntrances, numExits, rate);
-		ParkingLot clientParkingLot = new ParkingLot(capacityLot, numEntrances, numExits, rate);
+		ParkingLot clientParkingLot = new ParkingLot("Mediorce Parking Garage",capacityLot, numEntrances, numExits, rate);
 		
 		// Populate the parking lot with dates for easier simulation
 		numCarsParked = Integer.parseInt(fileContents.get(4));
@@ -306,60 +322,52 @@ public class ParkingLot
 			
 			// Ask the user what they'd like to do next
 			
-			System.out.println("What would you like to do next? P - Profit related commands | V - simulate vehicle entering/exitting the parking Lot");
+			System.out.println("What would you like to do next? P - Profit related commands | V - simulate vehicle entering/exitting the parking Lot | G - Group related commands");
 			operationPerform = sc.next();
 			VerifySimulation(operationPerform);
 			
 			// Call respective functions depending on what is read in
 			if (operationPerform.equals("P"))
 			{
-				while (continueOperation == true)
+				clientParkingLot.listProfitOperations();	
+				optionSelected = sc.next();
+					
+				switch(optionSelected)
 				{
-					clientParkingLot.listProfitOperations();
-					
-					optionSelected = sc.next();
-					
-					switch(optionSelected)
-					{
-					case "1":
-						clientParkingLot.getProfit();
-						break;
-					case "2":
-						clientParkingLot.listExits();
-						int exitIndex = sc.nextInt();
-						clientParkingLot.getProfitSpecific(exitIndex);
-						break;
-					}
-					
-					System.out.println("Do you want to continue operations? - input (Y/N)");
-					tempBoolHolder = sc.next();
-					continueOperation = VerifyOperation(tempBoolHolder);
+				case "1":
+					clientParkingLot.getProfit();
+					break;
+				case "2":
+					clientParkingLot.listExits();
+					int exitIndex = sc.nextInt();
+					clientParkingLot.getProfitSpecific(exitIndex);
+					break;
 				}
-				
+					
+				System.out.println("Do you want to continue operations? - input (Y/N)");
+				tempBoolHolder = sc.next();
+				continueOperation = VerifyOperation(tempBoolHolder);
 			}
 			else if (operationPerform.equals("V"))
 			{
-				while (continueOperation == true)
+				Vehicle.listVehicleOperations();
+				optionSelected = sc.next();
+					
+				switch(optionSelected)
 				{
-					Vehicle.listVehicleOperations();
-					
-					optionSelected = sc.next();
-					
-					switch(optionSelected)
-					{
-					case "1":
-						clientParkingLot.enterParkingLot(sc);
-						break;
-					case "2":
-						clientParkingLot.leaveParkingLot(sc);
-						break;
-					}
-					
-					System.out.println("Do you want to continue operations? - input (Y/N)");
-					tempBoolHolder = sc.next();
-					continueOperation = VerifyOperation(tempBoolHolder);
+				case "1":
+					clientParkingLot.enterParkingLot(sc);
+					break;
+				case "2":
+					clientParkingLot.leaveParkingLot(sc);
+					break;
 				}
+					
+				System.out.println("Do you want to continue operations? - input (Y/N)");
+				tempBoolHolder = sc.next();
+				continueOperation = VerifyOperation(tempBoolHolder);
 			}
+			
 			
 			
 			
