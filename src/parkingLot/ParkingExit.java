@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class ParkingExit
 {
-	// Field variables
 	double totalProfit;
 	ArrayList <Integer> totalProfitPerDay;
 	ArrayList <String> timeStampDay;
@@ -38,19 +37,6 @@ public class ParkingExit
 		return true;
 	}
 	
-	/*
-	 * Converts the time of the date to 00:00:00
-	 * @ params - datetime of ticket
-	 */
-	
-	private String convertDay (String inDate)
-	{
-		String returnString = inDate;
-		return returnString;
-	}
-	
-	
-
 	/*
 	 * checks if the current date passed is is ==
 	 * to the day of the last entry - if not then
@@ -104,14 +90,9 @@ public class ParkingExit
 			d2 = format.parse(currentDateTime);
 		}
 		catch (ParseException e)
-		{
-			e.printStackTrace();
-		}
+		{e.printStackTrace();}
 		
 		long diff = d2.getTime() - d1.getTime();
-		long diffSeconds = diff / 1000;
-		long diffMinutes = diff / (60 * 1000);
-		long diffHours = diff / (60 * 60 * 1000);
 		
 		double diffDouble = diff/(1000 * 60);
 		diffDouble /= 60;

@@ -12,12 +12,10 @@ public class Vehicle
 	// Helper functions
 	
 	public Vehicle (String ticketIn)
-	{
-		this.ticketAttached = ticketIn;
-	}
+	{this.ticketAttached = ticketIn;}
 	
 	
-	// static functions
+	// Static functions
 	
 	public static void listVehicleOperations()
 	{

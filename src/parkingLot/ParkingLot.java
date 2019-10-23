@@ -21,7 +21,6 @@ public class ParkingLot
 	
 	public ParkingLot (int maxCap, int numEntrances, int numExits, float rate)
 	{
-		this.maxCapacity = maxCap;
 		this.currentCapacity = maxCap;
 		this.hourlyRate = rate;
 		
@@ -36,7 +35,6 @@ public class ParkingLot
 	
 	public ParkingLot() {}
 
-	private int maxCapacity;
 	private int currentCapacity;
 	private int numOfFloors;
 	private float hourlyRate;
@@ -64,25 +62,31 @@ public class ParkingLot
 	
 	private void getProfit()
 	{	
-		int amountProfit = 0;
+		double amountProfit = 0;
 		// Iterate through the parking Exit array
 		for (ParkingExit pe : List_ParkingExit)
-		{
-			
-		}
+			amountProfit += pe.totalProfit;
 		
-		
+		System.out.println("Total profit since parking lots opening date : " + amountProfit);
 	}
 	
 	private void getProfitSpecific(int indexIn)
 	{
-		int amountProfit = 0;
-		
-		// Find the specific index of parking exit and get the profit that is kept track in that exit
+		indexIn -= 1;
+		double profitSpecific = List_ParkingExit.get(indexIn).totalProfit;
+		System.out.println("Total profit from exit # : " + indexIn+1 + " is : " + profitSpecific);
 	}
 		
 	private void enterParkingLot(Scanner sc)
 	{	
+		// Check if the parking lot has space
+		
+		if (this.currentCapacity == 0)
+		{
+			System.out.println("There isn't enough space in the parking lot - consider finding somewhere else to park");
+			System.exit(1);
+		}
+		
 		System.out.println("Please select from the following entrances to enter from : 1 ~ " + String.valueOf(List_ParkingEntrance.size()));
 		
 		int indexPass = sc.nextInt();
@@ -98,21 +102,16 @@ public class ParkingLot
 		
 		// Display the current information to the driver
 		ParkingEntrance entranceChosen = List_ParkingEntrance.get(indexPass);
-		entranceChosen.DisplayInfo(currentCapacity, hourlyRate);
+		String ticket = entranceChosen.DisplayInfoAndDecide(currentCapacity, hourlyRate);
+		
+		// Check if the user decided not to enter the parking lot
+		if (ticket.equals(""))
+			return;
 		
 		// Verify that there is space
-		if (this.currentCapacity > 0)
-		{
-			String ticket = entranceChosen.RecieveTicket();
-			System.out.println("Recieved a ticket - timestamp given : " + ticket);
-			Vehicle Car = new Vehicle(ticket);
-			List_Vehicles.add(Car);
-		}
-		else 
-		{
-			System.out.println("There isn't enough space in the parking lot - consider finding somewhere else to park");
-			System.exit(1);
-		}
+		System.out.println("Recieved a ticket - timestamp given : " + ticket);
+		Vehicle Car = new Vehicle(ticket);
+		List_Vehicles.add(Car);
 		
 		// Decrements the capacity by 1
 		this.ParkVehicle();
@@ -159,9 +158,7 @@ public class ParkingLot
 		
 		ParkingExit exitChosen = List_ParkingExit.get(indexPass);
 		exitChosen.PayTicket(ticket, this.hourlyRate);
-		
 		this.UnparkVehicle(indexPassVehicle);
-		
 	}
 	
 	private void ParkVehicle()
