@@ -104,9 +104,11 @@ public class ParkingLot
 			System.exit(1);
 		}
 		
+		Vehicle Car = new Vehicle();
+		
 		// Display the current information to the driver
 		ParkingEntrance entranceChosen = List_ParkingEntrance.get(indexPass);
-		String ticket = entranceChosen.DisplayInfoAndDecide(currentCapacity, hourlyRate);
+		String ticket = entranceChosen.DisplayInfoAndDecide(Car, currentCapacity, hourlyRate);
 		
 		// Check if the user decided not to enter the parking lot
 		if (ticket.equals(""))
@@ -114,7 +116,7 @@ public class ParkingLot
 		
 		// Verify that there is space
 		System.out.println("Recieved a ticket - timestamp given : " + ticket);
-		Vehicle Car = new Vehicle(ticket);
+		Car.addTicket(ticket);
 		List_Vehicles.add(Car);
 		
 		// Decrements the capacity by 1
@@ -226,8 +228,7 @@ public class ParkingLot
 			System.out.println("Please input a positive number for the capacity, number of entrances, hourly rate, and number of exits");
 			System.out.println("Ending program");
 			System.exit(1);
-		}
-			
+		}	
 	}
 	
 	public static boolean VerifyOperation (String operationRead)
@@ -247,11 +248,11 @@ public class ParkingLot
 	
 	public static void VerifySimulation (String operationRead)
 	{
-		if (operationRead.equals("V") || operationRead.equals("P"))
+		if (operationRead.equals("V") || operationRead.equals("P") || operationRead.equals("G"))
 			return;
 		else
 		{
-			System.out.println("Please enter a valid Simulation operation letter (either P - profit or V - simulate vehicles enterings and exitting the parking lot");
+			System.out.println("Please enter a valid Simulation operation letter (either P - profit or V - simulate vehicles enterings and exitting the parking lot or G - group related commands");
 			System.out.println("Exitting program");
 			System.exit(1);
 		}
@@ -367,7 +368,12 @@ public class ParkingLot
 				tempBoolHolder = sc.next();
 				continueOperation = VerifyOperation(tempBoolHolder);
 			}
-			
+			else if (operationPerform.equals("G"))
+			{
+				ParkingGroup.listGroupOperations();
+				optionSelected = sc.next();
+				
+			}
 			
 			
 			

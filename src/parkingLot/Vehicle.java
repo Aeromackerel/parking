@@ -11,7 +11,16 @@ public class Vehicle
 	
 	// Helper functions
 	
+	public Vehicle() 
+	{
+		this.requiredSpace = null;
+		this.ticketAttached = null;
+	}
+	
 	public Vehicle (String ticketIn)
+	{this.ticketAttached = ticketIn;}
+	
+	protected void addTicket (String ticketIn)
 	{this.ticketAttached = ticketIn;}
 	
 	

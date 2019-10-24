@@ -5,5 +5,4 @@ public enum ParkingType
 	REGULAR,
 	HANDICAPPED,
 	COMPACT,
-	RESERVED
 }
