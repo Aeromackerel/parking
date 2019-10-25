@@ -1,8 +1,6 @@
 package parkingLot;
 
-public enum ParkingType 
+public class ParkingType 
 {
-	REGULAR,
-	HANDICAPPED,
-	COMPACT,
+
 }

@@ -19,12 +19,14 @@ public class ParkingLot
 {
 	// Constructors
 	
-	public ParkingLot (String nameIn, int maxCap, int numEntrances, int numExits, float rate)
+	public ParkingLot (String nameIn, int maxCap, int numEntrances, int numExits, float rate, int numFloors)
 	{
 		this.currentCapacity = maxCap;
+		this.maxCapacity = maxCap;
 		this.hourlyRate = rate;
 		this.policy = "";
 		this.parkingLotName = nameIn;
+		this.numOfFloors = numFloors;
 		
 		for (int i = 0; i < numEntrances; i++)
 			List_ParkingEntrance.add(new ParkingEntrance());
@@ -32,16 +34,20 @@ public class ParkingLot
 		for (int i = 0; i < numExits; i++)
 			List_ParkingExit.add(new ParkingExit());
 		
+		this.initializeLotsPerFloor();
+		
 		System.out.println("Successfully created a parking lot!");
 	}
 	
 	public ParkingLot() {}
 
 	private int currentCapacity;
+	private int maxCapacity;
 	private int numOfFloors;
 	private float hourlyRate;
 	protected String parkingLotName;
 	private String policy;
+	ArrayList<Integer> capacityPerFloor = new ArrayList<>();
 	ArrayList<ParkingEntrance> List_ParkingEntrance = new ArrayList<>();
 	ArrayList<ParkingExit> List_ParkingExit = new ArrayList<> ();
 	ArrayList<Vehicle> List_Vehicles = new ArrayList<>();
@@ -64,6 +70,40 @@ public class ParkingLot
 	private void listExits()
 	{System.out.println("Please select from the following exits : 1 ~  " + String.valueOf(List_ParkingExit.size()));}
 	
+	private void initializeLotsPerFloor()
+	{
+		int numLotsPerFloor = (int) this.maxCapacity/this.numOfFloors;
+		int leftOverLots = this.maxCapacity - (numLotsPerFloor * numOfFloors);
+		
+		for (int i = 0; i < numOfFloors; i++)
+			this.capacityPerFloor.add(numLotsPerFloor);
+		
+		int index = 0;
+		
+		while (leftOverLots > 0)
+		{
+			int previousCapacity = this.capacityPerFloor.get(index);
+			this.capacityPerFloor.set(index, previousCapacity+1);
+			leftOverLots -=1;
+			index++;
+		}
+		
+	}
+	
+	private void updateCapacityPerFloor()
+	{
+		for (int i = 0; i < this.capacityPerFloor.size(); i++)
+		{
+			if (this.capacityPerFloor.get(i) > 0)
+			{
+				this.capacityPerFloor.set(i, this.capacityPerFloor.get(i) - 1);
+				break;
+			}
+			
+		}
+		
+	}
+	
 	private void getProfit()
 	{	
 		double amountProfit = 0;
@@ -78,7 +118,7 @@ public class ParkingLot
 	{
 		indexIn -= 1;
 		double profitSpecific = List_ParkingExit.get(indexIn).totalProfit;
-		System.out.println("Total profit from exit # : " + indexIn+1 + " is : " + profitSpecific);
+		System.out.println("Total profit from exit # : " + (indexIn+1) + " is : " + profitSpecific);
 	}
 		
 	private void enterParkingLot(Scanner sc)
@@ -105,10 +145,11 @@ public class ParkingLot
 		}
 		
 		Vehicle Car = new Vehicle();
+		ArrayList<Integer> passList = this.capacityPerFloor;
 		
 		// Display the current information to the driver
 		ParkingEntrance entranceChosen = List_ParkingEntrance.get(indexPass);
-		String ticket = entranceChosen.DisplayInfoAndDecide(Car, currentCapacity, hourlyRate);
+		String ticket = entranceChosen.DisplayInfoAndDecide(Car, currentCapacity, hourlyRate, passList);
 		
 		// Check if the user decided not to enter the parking lot
 		if (ticket.equals(""))
@@ -168,7 +209,10 @@ public class ParkingLot
 	}
 	
 	private void ParkVehicle()
-	{this.currentCapacity -= 1;}
+	{
+		this.currentCapacity -= 1;
+		this.updateCapacityPerFloor();
+	}
 	
 	private void UnparkVehicle(int indexCar)
 	{
@@ -182,10 +226,10 @@ public class ParkingLot
 	
 	private void setCarsTickets (ArrayList<String> fileContents, int numCarsParked)
 	{
-		int index = 5;
+		int index = 7;
 		String ticketDate;
 		
-		while (index < 5 + numCarsParked)
+		while (index < 7 + numCarsParked)
 		{
 			ticketDate = fileContents.get(index);
 			boolean validTicket = List_ParkingExit.get(0).isValidDate(ticketDate);
@@ -294,20 +338,23 @@ public class ParkingLot
 		int numFloors;
 		float rate;
 		int numCarsParked;
+		String nameGarage;
 		String whileOperation;
 		String operationPerform;
 		boolean continueOperation = true;
 		
 		// Constructing parking lot based off parameters passed in through text file
 		capacityLot = Integer.parseInt(fileContents.get(0));
-		numEntrances = Integer.parseInt(fileContents.get(1));
-		numExits = Integer.parseInt(fileContents.get(2));
-		rate = Float.parseFloat(fileContents.get(3));
+		numFloors = Integer.parseInt(fileContents.get(1));
+		numEntrances = Integer.parseInt(fileContents.get(2));
+		numExits = Integer.parseInt(fileContents.get(3));
+		rate = Float.parseFloat(fileContents.get(4));
+		nameGarage = fileContents.get(5);
 		validateInputs (capacityLot, numEntrances, numExits, rate);
-		ParkingLot clientParkingLot = new ParkingLot("Mediorce Parking Garage",capacityLot, numEntrances, numExits, rate);
+		ParkingLot clientParkingLot = new ParkingLot(nameGarage ,capacityLot, numEntrances, numExits, rate, numFloors);
 		
 		// Populate the parking lot with dates for easier simulation
-		numCarsParked = Integer.parseInt(fileContents.get(4));
+		numCarsParked = Integer.parseInt(fileContents.get(6));
 		clientParkingLot.setCarsTickets(fileContents, numCarsParked);
 		
 		String tempBoolHolder;
