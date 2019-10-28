@@ -25,13 +25,12 @@ public class ParkingExit
 	{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		dateFormat.setLenient(false);
+		System.out.println(inDate);
 		
 		try
 		{dateFormat.parse(inDate.trim());}
 		catch (ParseException pe)
-		{
-			return false;
-		}
+		{return false;}
 		
 		
 		return true;
@@ -92,7 +91,7 @@ public class ParkingExit
 		diffDouble /= 60;
 		System.out.println(diffDouble);
 		
-		totalProfit += diffDouble;
+		totalProfit += diffDouble * hourlyRate;
 		
 		
 		

@@ -1,3 +1,4 @@
+Airport Parking Group
 200
 7
 3
@@ -10,3 +11,14 @@ Airport Parking Garage
 2019/10/21 01:13
 2019/10/20 02:14
 2019/10/19 12:00
+Airport Parking Group2
+300
+5
+2
+2
+1.50
+Airport Economy Lot
+3
+2019/10/24 00:59
+2019/10/23 12:00
+2019/10/19 05:00

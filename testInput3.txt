@@ -1,0 +1,9 @@
+Sample Parking Group
+-10
+b
+a
+0.382
+10.42.321
+Parking Garage
+1
+1019/10/20 10:00

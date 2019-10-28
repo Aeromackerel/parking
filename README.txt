@@ -1,9 +1,10 @@
-There is not textfile reading at the moment.
-Input has to be done manually.
-	- Profit has not been fully flushed out yet; these commands won't return anything
-	significant
-	- Timestamps are timed at the time the program runs, so for any valid pricing you'd
-	have to wait a minute or so for it to grant you the price.
-
-However, I will provide sample inputs, but
-timestamps will not work correctly.
+*HOW TO CREATE YOUR OWN INPUT FILE*
+line#1 : Parking Group Name
+line#2 : Number of capacity for the parking lot being created
+line#3 : Number of floors the parking lot will have
+line#4 : Number of entrances the parking lot will have
+line#5 : Number of exits the parking lot will have
+line#6 : Hourly rate the parking lot will charge
+line#7 : Parking Garage Name
+line#8 : Number of cars in the lot to initialize
+line#9+numberOfCarsInLot : Datetime format of their ticket they received (YYYY/MM/DD HH:MM) 

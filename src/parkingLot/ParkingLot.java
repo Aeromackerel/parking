@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 
 public class ParkingLot 
@@ -121,7 +122,7 @@ public class ParkingLot
 		System.out.println("Total profit from exit # : " + (indexIn+1) + " is : " + profitSpecific);
 	}
 		
-	private void enterParkingLot(Scanner sc)
+	private void enterParkingLot(Scanner sc, HashSet<String> plateTracker)
 	{	
 		// Check if the parking lot has space
 		
@@ -149,7 +150,7 @@ public class ParkingLot
 		
 		// Display the current information to the driver
 		ParkingEntrance entranceChosen = List_ParkingEntrance.get(indexPass);
-		String ticket = entranceChosen.DisplayInfoAndDecide(Car, currentCapacity, hourlyRate, passList);
+		String ticket = entranceChosen.DisplayInfoAndDecide(Car, currentCapacity, hourlyRate, passList, plateTracker);
 		
 		// Check if the user decided not to enter the parking lot
 		if (ticket.equals(""))
@@ -158,7 +159,7 @@ public class ParkingLot
 		// Verify that there is space
 		System.out.println("Recieved a ticket - timestamp given : " + ticket);
 		Car.addTicket(ticket);
-		List_Vehicles.add(Car);
+		this.List_Vehicles.add(Car);
 		
 		// Decrements the capacity by 1
 		this.ParkVehicle();
@@ -172,7 +173,7 @@ public class ParkingLot
 	 *  @ errors - if they choose an invalid index, then we tell exit the program
 	 */
 	
-	private void leaveParkingLot(Scanner sc)
+	private void leaveParkingLot(Scanner sc, HashSet<String> plateTracker)
 	{
 		System.out.println("Please enter the number of your vehicle from : 1 ~ " + String.valueOf(List_Vehicles.size()));
 		
@@ -186,9 +187,9 @@ public class ParkingLot
 			System.exit(1);
 		}
 		
-		Vehicle car = List_Vehicles.get(indexPassVehicle);
+		Vehicle car = this.List_Vehicles.get(indexPassVehicle);
 		String ticket = car.ticketAttached;
-		
+		String plate = car.plateNumber;	
 		
 		System.out.println("Please select from the following exits to leave from : 1 ~ " + String.valueOf(List_ParkingExit.size()));
 		
@@ -205,6 +206,7 @@ public class ParkingLot
 		
 		ParkingExit exitChosen = List_ParkingExit.get(indexPass);
 		exitChosen.PayTicket(ticket, this.hourlyRate);
+		plateTracker.remove(plate);
 		this.UnparkVehicle(indexPassVehicle);
 	}
 	
@@ -224,12 +226,12 @@ public class ParkingLot
 	 * and datetime stamped tickets from the txt file passed in
 	 * @ params - ArrayList<String> fileLines, integer numbers of car parked */
 	
-	private void setCarsTickets (ArrayList<String> fileContents, int numCarsParked)
+	private int setCarsTickets (ArrayList<String> fileContents, int numCarsParked, int indexIn)
 	{
-		int index = 7;
+		int index = indexIn;
 		String ticketDate;
 		
-		while (index < 7 + numCarsParked)
+		while (index < indexIn + numCarsParked)
 		{
 			ticketDate = fileContents.get(index);
 			boolean validTicket = List_ParkingExit.get(0).isValidDate(ticketDate);
@@ -239,6 +241,8 @@ public class ParkingLot
 			this.ParkVehicle();
 			index++;
 		}
+		
+		return index;
 	}
 	
 	private void handleInvalidTicket()
@@ -247,7 +251,7 @@ public class ParkingLot
 		System.exit(1);
 	}
 	
-	private void setPolicy(String policyIn)
+	protected void setPolicy(String policyIn)
 	{this.policy = policyIn;}
 	
 	public float getHourlyRate()
@@ -280,7 +284,10 @@ public class ParkingLot
 		if (operationRead.equals ("Y"))
 			return true;
 		else if (operationRead.equals("N"))
-			return false;
+			{
+				System.exit(1);
+				return false;
+			}
 		
 		else
 		{
@@ -324,14 +331,31 @@ public class ParkingLot
 		return fileContents;
 	}
 	
+	private static void ListParkingLots (ArrayList<ParkingLot> List_ParkingLot)
+	{
+		int index = 1;
+		
+		for (ParkingLot pL : List_ParkingLot )
+		{
+			System.out.println(index + " - " + pL.parkingLotName);
+			index += 1;
+		}
+	}
+	
 	// Driver code
 	
 	public static void main (String [] args)
 	{	
+		// To keep track of all the vehicles in the system
+		HashSet <String> plateHashSet =  new HashSet<String> ();
+		
 		ValidateInputs helperClass = new ValidateInputs();
 		ArrayList<String> fileContents = readFile(args[0]);
 		helperClass.checkInputs(fileContents);
 		
+		ArrayList<ParkingGroup> List_ParkingGroup = new ArrayList<>();
+		ArrayList<ParkingLot> List_ParkingLot = new ArrayList<>();
+		String parkingGroupName;
 		int capacityLot;
 		int numEntrances;
 		int numExits;
@@ -342,20 +366,50 @@ public class ParkingLot
 		String whileOperation;
 		String operationPerform;
 		boolean continueOperation = true;
+		ParkingLot clientParkingLot = new ParkingLot();
 		
-		// Constructing parking lot based off parameters passed in through text file
-		capacityLot = Integer.parseInt(fileContents.get(0));
-		numFloors = Integer.parseInt(fileContents.get(1));
-		numEntrances = Integer.parseInt(fileContents.get(2));
-		numExits = Integer.parseInt(fileContents.get(3));
-		rate = Float.parseFloat(fileContents.get(4));
-		nameGarage = fileContents.get(5);
-		validateInputs (capacityLot, numEntrances, numExits, rate);
-		ParkingLot clientParkingLot = new ParkingLot(nameGarage ,capacityLot, numEntrances, numExits, rate, numFloors);
-		
-		// Populate the parking lot with dates for easier simulation
-		numCarsParked = Integer.parseInt(fileContents.get(6));
-		clientParkingLot.setCarsTickets(fileContents, numCarsParked);
+		int index = 0;
+		while (index < fileContents.size())
+		{
+			// Constructing parking lot based off parameters passed in through text file
+			parkingGroupName = fileContents.get(index);
+			capacityLot = Integer.parseInt(fileContents.get(index+1));
+			numFloors = Integer.parseInt(fileContents.get(index+2));
+			numEntrances = Integer.parseInt(fileContents.get(index+3));
+			numExits = Integer.parseInt(fileContents.get(index+4));
+			rate = Float.parseFloat(fileContents.get(index+5));
+			nameGarage = fileContents.get(index+6);
+			validateInputs (capacityLot, numEntrances, numExits, rate);
+			clientParkingLot = new ParkingLot(nameGarage ,capacityLot, numEntrances, numExits, rate, numFloors);
+					
+			// Populate the parking lot with dates for easier simulation
+			numCarsParked = Integer.parseInt(fileContents.get(index+7));
+			index += 8;
+			index = clientParkingLot.setCarsTickets(fileContents, numCarsParked, index);
+			
+			// Create Parking Group and add if the arraylist is empty
+			if (List_ParkingGroup.size() == 0)
+				List_ParkingGroup.add(new ParkingGroup(parkingGroupName));
+			
+			// Otherwise, check if we have an existing group
+			for (int i = 0; i < List_ParkingGroup.size(); i++)
+			{
+				ParkingGroup tempGroup = List_ParkingGroup.get(i);
+				
+				if (tempGroup.groupName.equals(parkingGroupName)) 
+				{
+					if (!tempGroup.List_ParkingLots.contains(clientParkingLot))
+						{
+							tempGroup.List_ParkingLots.add(clientParkingLot);
+							tempGroup.List_Discounts.add((float) 0.0);
+						}
+				}
+				else
+					List_ParkingGroup.add(new ParkingGroup(parkingGroupName));
+			}
+			
+			List_ParkingLot.add(clientParkingLot);
+		}
 		
 		String tempBoolHolder;
 		String optionSelected;
@@ -379,6 +433,13 @@ public class ParkingLot
 			{
 				clientParkingLot.listProfitOperations();	
 				optionSelected = sc.next();
+				
+				System.out.println("Please select from the parking lot you'd like to look at");
+				
+				ListParkingLots(List_ParkingLot);
+				
+				int parkingLotSelected = sc.nextInt();
+				clientParkingLot = List_ParkingLot.get(parkingLotSelected-1);
 					
 				switch(optionSelected)
 				{
@@ -400,14 +461,20 @@ public class ParkingLot
 			{
 				Vehicle.listVehicleOperations();
 				optionSelected = sc.next();
+				
+				System.out.println("Please select which parking lot you'd like to enter OR exit");
+				ListParkingLots(List_ParkingLot);
+				
+				int parkingLotIndex = sc.nextInt();
+				clientParkingLot = List_ParkingLot.get(parkingLotIndex-1);
 					
 				switch(optionSelected)
 				{
 				case "1":
-					clientParkingLot.enterParkingLot(sc);
+					clientParkingLot.enterParkingLot(sc, plateHashSet);
 					break;
 				case "2":
-					clientParkingLot.leaveParkingLot(sc);
+					clientParkingLot.leaveParkingLot(sc, plateHashSet);
 					break;
 				}
 					
@@ -417,8 +484,54 @@ public class ParkingLot
 			}
 			else if (operationPerform.equals("G"))
 			{
+				System.out.println("Please enter the number to choose which parking group you'd like to simulate operations for");
+				int indexGroup = 1;
+				
+				// List the possible Parking Groups to choose from
+				for (ParkingGroup pg : List_ParkingGroup)
+				{
+					System.out.println(indexGroup + " " +pg.groupName);
+					indexGroup += 1;
+				}
+				
+				int groupIndexSelected = sc.nextInt();
+				List_ParkingGroup.get(0).checkIndex(groupIndexSelected, List_ParkingGroup.size());
+				ParkingGroup temp = List_ParkingGroup.get(groupIndexSelected-1);
+				
+				System.out.println(temp.List_ParkingLots.size());
+				
+				// Validate that it is a valid index chosen
+				
 				ParkingGroup.listGroupOperations();
 				optionSelected = sc.next();
+				
+				// Switch case to decide what the user wants to do
+				switch(optionSelected)
+				{
+				case "1":
+					System.out.println("Sending prices to all vehicles");
+					temp.sendPrices();
+					break;
+				case "2":
+					System.out.println("Please select the index of the parking lot you'd like to modify");
+					temp.ParkingLotNames();
+					int indexLotSelected = sc.nextInt();
+					System.out.println("Please enter the policy you'd like to set for the parking lot");
+					String policyEntered = sc.next();
+					temp.handlePolicy(indexLotSelected, policyEntered);
+					break;
+				case "3":
+					System.out.println("Please select the index of the parking lot you'd like to set discounts for");
+					temp.ParkingLotNames();
+					int indexLotSelectedDiscount = sc.nextInt();
+					System.out.println("Please enter the % discount you'd like to give for the lot");
+					float discountRate = sc.nextFloat();
+					temp.handleDiscount(indexLotSelectedDiscount, discountRate);
+					break;
+				case "4":
+					temp.rollbackDiscounts();
+					break;
+				}
 				
 			}
 			

@@ -20,6 +20,9 @@ public class Vehicle
 	public Vehicle (String ticketIn)
 	{this.ticketAttached = ticketIn;}
 	
+	protected void setPlate(String plateIn)
+	{this.plateNumber = plateIn;}
+	
 	protected void addTicket (String ticketIn)
 	{this.ticketAttached = ticketIn;}
 	

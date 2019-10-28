@@ -39,16 +39,16 @@ public class ValidateInputs
 	
 	public void checkInputs(ArrayList<String> fileContents)
 	{
-		if (fileContents.size() < 4)
+		if (fileContents.size() < 5)
 		{
 			System.out.println("Invalid inputs - terminating the program");
 			System.exit(1);
 		}
 		
-		isNumber(fileContents.get(0));
 		isNumber(fileContents.get(1));
 		isNumber(fileContents.get(2));
-		isFloat(fileContents.get(3));
+		isNumber(fileContents.get(3));
+		isFloat(fileContents.get(4));
 	}
 	
 }
